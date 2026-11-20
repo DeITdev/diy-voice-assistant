@@ -43,7 +43,8 @@ Planned repository module boundaries (keeping I/O, state transitions, and server
 - `server/` — Local AI Server Docker Compose v2 stack (`compose.yaml`, `compose.override.yaml`, `.env.example`, system prompt config, and any custom `FastAPI` STT/TTS wrappers).
 - `system/` — Raspberry Pi OS reference configs (`/boot/firmware/config.txt` snippet, `asound.conf`, `voice-assistant.service` `systemd` unit).
 - `tests/` — `pytest` suite (`conftest.py`, unit tests with mocked audio/HTTP, integration contract tests).
-- `context/` — Living project context, architecture, standards, workflow rules, and progress tracker.
+- `context/` — Living project context, architecture, standards, workflow rules, progress tracker, and branch-isolated progress fragments (`context/progress/`).
+- `scripts/` — Standalone PEP 723 maintenance/diagnostic scripts (including `scripts/consolidate_progress.py` for merging `context/progress/*.md` fragments into `context/progress-tracker.md`).
 
 ## Storage Model
 

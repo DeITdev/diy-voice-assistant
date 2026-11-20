@@ -12,6 +12,7 @@ Update this file after every meaningful implementation change.
 
 ## Completed
 
+- Implemented branch-aware `context-collaboration` workflow across [AGENTS.md](file:///Users/Danar/Project/Ngoding/diy-voice-assistant/AGENTS.md) and [CLAUDE.md](file:///Users/Danar/Project/Ngoding/diy-voice-assistant/CLAUDE.md), added `context/progress/.gitkeep` and `scripts/consolidate_progress.py` (PEP 723 Python script for consolidating and archiving progress fragments), and synced `context/architecture.md` and `context/ai-workflow-rules.md`.
 - Authored Master PRD v1.0 ([prd_diy_voice_assistant_speaker_integrated_with_gen_ai.md](file:///Users/Danar/Project/Ngoding/diy-voice-assistant/prd_diy_voice_assistant_speaker_integrated_with_gen_ai.md)).
 - Installed 15 project-scoped implementation skills into `.agents/skills/` (16 total with `find-skills`) and locked versions in `skills-lock.json`.
 - Populated all `context/` specification files (`project-overview.md`, `architecture.md`, `code-standards.md`, `ai-workflow-rules.md`, `progress-tracker.md`) aligned with the PRD and installed skills.

@@ -47,7 +47,7 @@ Split an implementation step if it combines:
 ## Handling Missing Requirements
 
 - Do not invent product behavior or hardware wiring changes not defined in the PRD or `context/` files.
-- If a requirement is ambiguous (e.g., GPU vs CPU-only server, exact LAN IP, primary language), record it in `context/progress-tracker.md` under **Open Questions** and resolve it with the user before implementing the dependent component.
+- If a requirement is ambiguous (e.g., GPU vs CPU-only server, exact LAN IP, primary language), record it in `context/progress/<fragment>.md` when on a non-`main` branch (or in `context/progress-tracker.md` under **Open Questions** when on `main`) and resolve it with the user before implementing the dependent component.
 
 ## Protected Files
 
@@ -61,7 +61,7 @@ Update the relevant `context/*.md` file whenever implementation changes:
 - System architecture, module layout, or invariants -> `context/architecture.md`
 - Language/tooling conventions or dependencies -> `context/code-standards.md`
 - Product scope, goals, or success criteria -> `context/project-overview.md`
-- Completed work, active task, open questions, or ADRs -> `context/progress-tracker.md`
+- Completed work, active task, open questions, or ADRs -> `context/progress-tracker.md` (when on `main`) or `context/progress/<fragment>.md` (when on any non-`main` branch)
 
 ## Before Moving to the Next Unit
 
@@ -70,4 +70,4 @@ Update the relevant `context/*.md` file whenever implementation changes:
 3. Quality checks pass for any touched files:
    - Python: `uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run ty check`
    - Compose (when applicable): `docker compose config --quiet`
-4. `context/progress-tracker.md` reflects the completed work and next step.
+4. Progress is recorded in `context/progress-tracker.md` (on `main`) or `context/progress/<fragment>.md` (on non-`main` branches), and `context/progress-tracker.md` has no unintended diff when off `main`.
