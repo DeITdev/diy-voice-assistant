@@ -4,18 +4,26 @@ Update this file after every meaningful implementation change.
 
 ## Current Phase
 
-- **Phase 0: Project Setup & Documentation** (Complete) — Ready to begin **Milestone 1 (Hardware Bench Proof)** and **Milestone 2/3 Software Scaffolding**.
+- **Milestone 2/3 (Local AI Models & Edge Client Proof)** (In Progress) — Ollama LLM (`gemma2-lokal`), Piper TTS (`id_ID-news_tts-medium`), and Whisper Tiny STT successfully installed and tested locally on Raspberry Pi 4B.
 
 ## Current Goal
 
-- Confirm open environment decisions (Local AI Server hardware/IP, language target, VAD library) and begin Milestone 1–3 implementation per [prd_diy_voice_assistant_speaker_integrated_with_gen_ai.md](file:///Users/Danar/Project/Ngoding/diy-voice-assistant/prd_diy_voice_assistant_speaker_integrated_with_gen_ai.md).
+- Wire STT, LLM, and TTS into a unified voice pipeline / service and prepare hardware wiring (Milestone 1).
 
 ## Completed
 
-- Implemented branch-aware `context-collaboration` workflow across [AGENTS.md](file:///Users/Danar/Project/Ngoding/diy-voice-assistant/AGENTS.md) and [CLAUDE.md](file:///Users/Danar/Project/Ngoding/diy-voice-assistant/CLAUDE.md), added `context/progress/.gitkeep` and `scripts/consolidate_progress.py` (PEP 723 Python script for consolidating and archiving progress fragments), and synced `context/architecture.md` and `context/ai-workflow-rules.md`.
-- Authored Master PRD v1.0 ([prd_diy_voice_assistant_speaker_integrated_with_gen_ai.md](file:///Users/Danar/Project/Ngoding/diy-voice-assistant/prd_diy_voice_assistant_speaker_integrated_with_gen_ai.md)).
+- Implemented branch-aware `context-collaboration` workflow across [AGENTS.md](file:///home/nova/diy-voice-assistant/AGENTS.md) and [CLAUDE.md](file:///home/nova/diy-voice-assistant/CLAUDE.md), added `context/progress/.gitkeep` and `scripts/consolidate_progress.py`, and synced `context/architecture.md` and `context/ai-workflow-rules.md`.
+- Authored Master PRD v1.0 ([prd_diy_voice_assistant_speaker_integrated_with_gen_ai.md](file:///home/nova/diy-voice-assistant/prd_diy_voice_assistant_speaker_integrated_with_gen_ai.md)).
 - Installed 15 project-scoped implementation skills into `.agents/skills/` (16 total with `find-skills`) and locked versions in `skills-lock.json`.
-- Populated all `context/` specification files (`project-overview.md`, `architecture.md`, `code-standards.md`, `ai-workflow-rules.md`, `progress-tracker.md`) aligned with the PRD and installed skills.
+- Populated all `context/` specification files aligned with the PRD.
+- Configured local AI models on Raspberry Pi 4B:
+  - **LLM (Otak):** Gemma 2 2B Q4_K_M (`gemma2-lokal`) and Qwen 2.5 1.5B (`qwen2.5:1.5b`, 986 MB download, 1.2 GB RAM) installed and verified in Ollama.
+  - **TTS (Mulut):** Piper TTS with official Indonesian voice `id_ID-news_tts-medium` (61 MB) installed in `/home/nova/models/piper/`.
+  - **STT (Telinga):** Faster-Whisper Tiny int8 (75 MB) installed in `/home/nova/models/whisper/`.
+  - Authored [scripts/test_stt_tts.py](file:///home/nova/diy-voice-assistant/scripts/test_stt_tts.py) and verified end-to-end synthesis and transcription on Raspberry Pi 4 with 100% word accuracy.
+  - Authored [scripts/demo_tanya_jawab.py](file:///home/nova/diy-voice-assistant/scripts/demo_tanya_jawab.py) with dynamic `--model` selection; confirmed Qwen 2.5 1.5B executes >2x faster (~27s vs ~64s) with higher RAM efficiency (1.2 GB vs 2.0 GB).
+  - Built and deployed lightweight Web Management Dashboard (`web/main.py`, `web/static/index.html`, `web/static/app.js`) powered by FastAPI. Features real-time telemetry (CPU, RAM, Temp, Disk), dynamic model switcher (Qwen 2.5 vs Gemma 2), in-browser microphone voice chat via Whisper STT, text chat, audio playback in browser, and hardware 3.5mm jack speaker trigger.
+  - Configured and activated `voice-assistant-web.service` via `systemd` ([scripts/voice-assistant-web.service](file:///home/nova/diy-voice-assistant/scripts/voice-assistant-web.service)). Dashboard and Ollama now auto-start synchronously on boot and gracefully terminate on shutdown.
 
 ## In Progress
 

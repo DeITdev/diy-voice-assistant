@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Smart Speaker Management | Raspberry Pi 4</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    /* Header */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-title h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-title p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      font-weight: 600;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    /* Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .card-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    /* Model Selector */
+    .model-selector {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    select {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    /* Telemetry Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .stat-box {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .stat-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    /* Chat Area */
+    .chat-container {
+      height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
+    .msg {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .msg.user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .msg.bot {
+      align-self: flex-start;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-bottom-left-radius: 4px;
+    }
+    .msg-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: flex;
+      gap: 8px;
+    }
+    /* Controls Area */
+    .voice-control-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0 8px 0;
+    }
+    .mic-button {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      border: none;
+      color: white;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+    .mic-button:active {
+      transform: scale(0.95);
+    }
+    .mic-button.recording {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.6);
+      animation: record-pulse 1s infinite alternate;
+    }
+    @keyframes record-pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+    .mic-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    /* Text Input Box */
+    .text-input-box {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .text-input-box input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .btn-send {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    /* Actions Row */
+    .actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 0.8rem;
+    }
+    .btn-speaker {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-speaker:hover {
+      color: var(--text-main);
+      border-color: var(--accent);
+    }
+    /* Audio Player */
+    audio {
+      width: 100%;
+      height: 36px;
+      margin-top: 8px;
+      border-radius: 8px;
+    }
+    .speaker-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .speaker-check input {
+      accent-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="header-title">
+        <h1><i class="fa-solid fa-robot" style="color: #3b82f6;"></i> Smart Speaker</h1>
+        <p>Raspberry Pi 4 • Local AI Management</p>
+      </div>
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        <span id="activeStatus">Online</span>
+      </div>
+    </header>
+
+    <!-- Telemetry Stats -->
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label"><i class="fa-solid fa-microchip"></i> CPU</div>
+        <div class="stat-val" id="statCpu">-- %</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label"><i class="fa-solid fa-memory"></i> RAM Bebas</div>
+        <div class="stat-val" id="statRam">-- GB</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label"><i class="fa-solid fa-temperature-half"></i> Suhu</div>
+        <div class="stat-val" id="statTemp">-- °C</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label"><i class="fa-solid fa-hard-drive"></i> Sisa Disk</div>
+        <div class="stat-val" id="statDisk">-- GB</div>
+      </div>
+    </div>
+
+    <!-- Model Switcher Card -->
+    <div class="card">
+      <div class="card-title">
+        <span><i class="fa-solid fa-sliders"></i> Pilihan Otak AI (Model)</span>
+        <span style="font-size: 0.7rem; color: var(--success);" id="activeInRamBadge">RAM: Idle</span>
+      </div>
+      <div class="model-selector">
+        <select id="modelSelect">
+          <option value="qwen2.5:1.5b">Qwen 2.5 (1.5B) - Super Cepat & Cerdas</option>
+          <option value="gemma2-lokal:latest">Gemma 2 (2B) - Santai & Komprehensif</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Interactive Voice & Chat Card -->
+    <div class="card">
+      <div class="card-title">
+        <span><i class="fa-solid fa-comments"></i> Obrolan Asisten Suara</span>
+        <button class="btn-speaker" id="btnPlayLastSpeaker"><i class="fa-solid fa-volume-high"></i> Tes Speaker Pi</button>
+      </div>
+
+      <!-- Chat Log -->
+      <div class="chat-container" id="chatLog">
+        <div class="msg bot">
+          Halo! Saya asisten suara lokal Anda. Tekan tombol mikrofon di bawah untuk berbicara lewat mic HP Anda, atau ketik pertanyaan di kotak teks!
+        </div>
+      </div>
+
+      <!-- Audio Player for Reply -->
+      <audio id="audioPlayer" controls style="display: none;"></audio>
+
+      <!-- Mic Button Box -->
+      <div class="voice-control-box">
+        <button class="mic-button" id="btnRecord">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+        <div class="mic-hint" id="micHint">Klik untuk Mulai Bicara</div>
+        <input type="file" id="nativeAudioInput" accept="audio/*" capture="microphone" style="display: none;">
+      </div>
+
+      <!-- Text Input Alternative -->
+      <div class="text-input-box">
+        <input type="text" id="textPrompt" placeholder="Ketik pertanyaan di sini...">
+        <button class="btn-send" id="btnSend"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+
+      <!-- Options row -->
+      <div class="actions-row">
+        <label class="speaker-check">
+          <input type="checkbox" id="checkSpeaker" checked>
+          <span>Putar juga di speaker Pi (Jack 3.5mm)</span>
+        </label>
+        <span id="timingInfo" style="color: var(--text-muted); font-size: 0.75rem;"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

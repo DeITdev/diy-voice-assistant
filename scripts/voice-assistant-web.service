@@ -1,0 +1,19 @@
+[Unit]
+Description=DIY Voice Assistant Web Management Dashboard
+After=network-online.target ollama.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nova
+Group=nova
+WorkingDirectory=/home/nova/diy-voice-assistant
+Environment="PATH=/home/nova/.local/bin:/home/nova/diy-voice-assistant/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/home/nova/diy-voice-assistant/.venv/bin/uvicorn web.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
